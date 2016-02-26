@@ -1,0 +1,404 @@
+/*********************/
+/** jRating CSS **/
+/*********************/
+
+
+/****** Rreviews Design CSS ********/
+body{
+	margin:0;
+	padding:0;
+}
+
+h1, h2, h3, h4, h5, h5, h6, ul{
+	margin:0;
+	padding:0;
+}
+
+a{
+	 text-decoration:none;
+}
+
+ul li{
+	list-style:none;
+}
+
+.clr{
+	clear:both;
+}
+
+.container{
+	margin:0 auto;
+	width:666px;
+	padding:12px 0;
+}
+
+.container .review_box{
+	margin:0 0 15px 0;
+	padding:0;
+}
+
+.container .review_box h2{
+	padding:0 0 5px 0;
+
+}
+
+.container .review_box .r_box{
+	margin:0;
+	padding:20px 0;
+	border:solid 1px #d2d2d2;
+}
+
+.container .review_box .r_box .gallery{
+	width:514px;
+	margin:0 auto;
+}
+
+.container .review_box .r_box .gallery ul{
+	margin:0;
+	padding:0;
+	overflow:hidden;
+}
+
+.container .review_box .r_box .gallery ul li{
+	float:left;
+	margin:0 7px;
+	/*border:solid 1px #d2d2d2;*/
+        background: none repeat scroll 0 0 transparent;
+        padding: 0;
+}
+
+.container .review_box .r_box .gallery .arrow{
+	position:relative;
+}
+
+.container .review_box .r_box .gallery .arrow .left{
+	 left: -75px;
+    position: absolute;
+    top: -71px;
+}
+
+.container .review_box .r_box .gallery .arrow .right{
+	right:-75px;
+    position:absolute;
+    top:-71px;
+}
+
+.container .product_review{
+	margin:0 0 16px 0;
+	padding:0 0 12px 0;
+	border-bottom:solid 1px #d2d2d2;
+}
+
+.container .product_review h3{
+	font-size:18px;
+	padding:0 0 5px 0;
+	text-transform: uppercase;
+}
+
+.container .product_review .raiting{
+	margin:0 0 16px 0;
+	border-bottom:solid 1px #d2d2d2;
+	overflow:hidden;
+	padding:0 0 10px 0;
+}
+
+.container .product_review .raiting span{
+	margin:0;
+	padding:0 12px 0 0;
+	float:left;
+	text-transform: uppercase;
+	font-size:12px;
+}
+
+.container .product_review .raiting ul.star{
+	margin:0;
+	padding:0;
+}
+
+.container .product_review .raiting ul.star{
+	margin:0;
+	float:left;
+	width:200px;
+	padding:0;
+}
+
+.container .product_review .raiting ul.star li{
+	margin:0;
+	padding:0;
+	float:left;
+}
+
+.container .product_review  .quality_part{
+	margin:0;
+	padding:0;
+}
+
+.container .product_review  .quality_part .box_left{
+	float:left;
+	width:152px;
+	margin:0 68px 24px 0;
+}
+
+.container .product_review  .quality_part .box_left .quality{
+	margin:0;
+	padding:0;
+	width:100px;
+	float:left;
+}
+
+.container .product_review  .quality_part .box_left .quality h4{
+	font-size:12px;
+	padding:0 0 5px 0;
+}
+
+.container .product_review  .quality_part .box_left .quality ul{
+	margin:0;
+	padding:0;
+}
+
+.container .product_review  .quality_part .box_left .quality ul li{
+	float:left;
+	padding:0 2px 0 0;
+        background: none repeat scroll 0 0 transparent;
+        margin: 0;
+}
+
+.container .product_review  .quality_part .box_left .rt{
+	width:32px;
+	float:right;
+	background:#f5f5f5;
+	font-size:12px;
+	color:#000;
+	padding:12px 5px;
+}
+
+.container .filter{
+	margin:0 0 20px 0;
+}
+
+.container .filter h4{
+	font-size:12px;
+	padding:0 0 10px 0;
+	text-transform: uppercase;
+}
+.container .filter select{
+	width:160px;
+	margin:0 0 10px 0;
+	padding:3px 0;
+}
+
+.container .filter h6{
+	color:#ababce;
+	margin:0 0 28px 0;
+	font-size:11px;
+}
+
+.container .filter .write_sec{
+	background:#f5f5f5;
+	padding:10px;
+}
+
+.container .filter .write_sec em{
+	width:105px;
+	float:left;
+}
+
+.container .filter .write_sec span{
+	font-size:12px;
+	width:116px;
+	color:#f72a2a;
+	float:left;
+	padding:3px 0 0 10px;
+}
+
+.container .filter .write_sec select{
+	float:right;
+	width:160px;
+	margin:0 0 0 0;
+	padding:0;
+}
+
+.container .filter .comment{
+	margin:0;
+	padding:0 0 10px 0;
+	border-bottom:solid 1px #d2d2d2;
+}
+
+.container .filter .comment ul.star{
+	margin:0 0 10px 0;
+	padding:0;
+	overflow:hidden;
+}
+
+.container .filter .comment ul.star li{
+	float:left;
+        background: none repeat scroll 0 0 transparent;
+        padding: 0;
+}
+
+.container .filter .comment h2{
+	margin:0 0 5px 0;
+	padding:0;
+	font-size:18px;
+        width: 100%;
+        float: left;
+}
+
+.container .filter .comment h5{
+	color:#ababce;
+	margin:0 0 5px 0;
+	font-size:11px;
+        width: 100%;
+        float: left;
+}
+
+.container .filter .comment .comment_sec{
+	background:#f5f5f5;
+	padding:8px 10px;
+}
+
+.container .filter .comment .comment_sec .pro{
+	float:left;
+	width:52px;
+	margin:0 0 0 0;
+}
+
+.container .filter .comment .comment_sec .con_area{
+	width:532px;
+	float:left;
+	margin:0 0 0 12px;
+}
+
+.container .filter .comment .comment_sec .con_area h4{
+	color:#ee2a24;
+	margin:0;
+	padding:0 0 5px 0;
+}
+
+.container .filter .comment .comment_sec .con_area h6{
+	margin:0;
+	padding:0 0 5px 15px;
+	color:#000;
+	font-size:12px;
+}
+
+.container .filter .comment .comment_sec .con_area p{
+	margin:0;
+	padding:0;
+	font-size:12px;
+}
+
+.container .filter .comment{
+	margin: 15px 0 0;
+	padding:0;
+}
+
+.container .filter .comment .bottom_part{
+	margin:0;
+	padding:15px 0;
+}
+
+.container .filter .comment .bottom_part p{
+	width:530px;
+	float:left;
+	margin:0;
+	padding:0;
+	font-size:12px;
+}
+
+.container .filter .comment .bottom_part .rt_part{
+	width:120px;
+	float:left;
+	margin:0 0 0 15px;
+}
+
+.container .filter .comment .bottom_part .rt_part h4{
+	text-transform:uppercase;
+	margin:0;
+	padding:0 0 3px 0;
+}
+
+.container .filter .comment .bottom_part .rt_part ul{
+	margin:0 0 12px 0;
+	line-height: 0;
+	padding:0;
+}
+
+.container .filter .comment .bottom_part .rt_part ul li{
+	float:left;
+	padding:0 2px 0 0;
+        margin: 0;
+}
+/********************* End ****************************/
+
+
+
+
+/**Div containing the color of the stars */
+.review-rating span {
+    display:none;
+}
+.product-rating {
+    float:left;
+}
+.product-rating span {
+    display:none;
+}
+.review_box .gallery li img {
+    height:77px;
+    width:110px;
+}
+.other-rating {
+    float:left;
+    width:100%;
+    margin-bottom: 20px;
+}
+.other-rating-left {
+    float:left;
+    width:300px;
+}
+.other-rating-right {
+    float:left;
+    width:300px;
+}
+#reviews-system-review-form .resizable-textarea {
+    width: 54%;
+}
+.star {
+    float:left;
+}
+.rate-item {
+    width: 100%;
+    float:left;
+}
+div .admin-edit-form-container {
+    width: 100%;
+}
+p#body-hidden {
+    display:none;
+}
+.hreview-aggregate {
+    display:none;
+}
+.desc-right .gallery{
+	width:514px;
+	margin:0 auto;
+}
+
+.desc-right .gallery ul{
+	margin:0;
+	padding:0;
+	overflow:hidden;
+}
+
+.desc-right .gallery ul li{
+	float:left;
+	margin:0 7px;
+	/*border:solid 1px #d2d2d2;*/
+        background: none repeat scroll 0 0 transparent;
+        padding: 0;
+}
+.desc-right .gallery li img {
+    height:77px;
+    width:110px;
+}

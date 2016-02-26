@@ -1,0 +1,861 @@
+<?php
+/**
+ * Implementation of hook_init().
+ */
+function reviews_system_init() {
+        //echo variable_get('site_name', '');   exit;
+    global $user; 
+    
+    
+    //$cart = uc_cart_get_contents();
+    
+    //echo "<pre>";print_r($_SESSION);echo "</pre>";
+
+    /*if(arg(0) == 'add' && arg(1) == 'review' && is_numeric(arg(2))) {
+        if($user->uid == 0) {
+            //$dest =  '?destination=add/review/'.arg(2);
+            drupal_goto('user/login', drupal_get_destination());
+        }
+    }*/
+
+   //Add library files
+   $path = drupal_get_path('module','reviews_system');
+   drupal_add_js(array('modulepath' => $path), 'setting');
+
+   // global css
+   drupal_add_css(drupal_get_path('module','reviews_system').'/css/reviews.css');
+
+   // Slimbox scripts
+    drupal_add_js(drupal_get_path('module','reviews_system').'/scripts/slimbox/js/slimbox2.js');
+    drupal_add_css(drupal_get_path('module','reviews_system').'/scripts/slimbox/css/slimbox2.css');  
+    
+}
+/**
+* hook perm implementation
+*/
+function reviews_system_perm() {
+    return array('Reviews Module');
+}
+
+
+/**
+ * Implementation of hook_menu().
+ */
+function reviews_system_menu() {
+  $items = array();
+  $items['reviews_systempath'] = array(
+    'title' => t('The reviews_system Page'),
+    'page callback' => 'reviews_system_settings',
+    'page arguments' => array('reviews_system_settings'),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['confirm_review'] = array(
+    'title' => t('Thanks for your review'),
+    'page callback' => 'reviews_system_confirm_review',
+    'page arguments' => array('reviews_system_confirm_review'),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['add/review/%'] = array(
+    'title' => t('Write a Review'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('reviews_system_review_form'),
+    //'access callback' => 'user_is_logged_in',
+    'access arguments' => array('access content'),
+    'file' => 'includes/reviews_system_review_form.inc',
+  );
+  $items['admin/content/reviews'] = array(
+    'title' => t('Reviews'),
+    'page callback' => 'reviews_system_admin_reviews',
+    'page arguments' => array('reviews_system_admin_reviews'),
+    //'access callback' => 'user_access',
+    'access arguments' => array('Reviews Module'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'includes/reviews_system_admin_reviews.inc',
+  );
+  $items['admin/review/edit/%'] = array(
+    'title' => t('Edit Review'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('reviews_system_review_edit_form'),
+    //'access arguments' => array('admin access'),
+    'access arguments' => array('Reviews Module'),
+    'type' => MENU_CALLBACK,
+    'file' => 'includes/reviews_system_review_form.inc',
+  );
+  $items['review/%'] = array(
+    'title' => t(''),
+    'page callback' => 'reviews_system_review_detail',
+    'page arguments' => array(1),
+    'access arguments' => array('access content')
+  );
+  $items['review/publish/%'] = array(
+    'title' => t('Publish'),
+    'page callback' => 'reviews_system_review_publish',
+    'page arguments' => array(2),
+    //'access arguments' => array('admin access'),
+    'access arguments' => array('Reviews Module'),
+    'type' => MENU_CALLBACK,
+    'file' => 'includes/reviews_system_admin_reviews.inc',
+  );
+  $items['review/unpublish/%'] = array(
+    'title' => t('Unpublish'),
+    'page callback' => 'reviews_system_review_unpublish',
+    'page arguments' => array(2),
+    //'access arguments' => array('admin access'),
+    'access arguments' => array('Reviews Module'),
+    'type' => MENU_CALLBACK,
+    'file' => 'includes/reviews_system_admin_reviews.inc',
+  );
+  $items['review/delete/%'] = array(
+    'title' => t('Delete'),
+    'page callback' => 'reviews_system_review_delete',
+    'page arguments' => array(2),
+    //'access arguments' => array('admin access'),
+    'access arguments' => array('Reviews Module'),
+    'type' => MENU_CALLBACK,
+    'file' => 'includes/reviews_system_admin_reviews.inc',
+  );
+  $items['reviews_data/%/%'] = array(
+    'title' => t(''),
+    'page callback' => 'reviews_system_review_data',
+    'page arguments' => array(),
+    'access arguments' => array('access content')
+  );                                                                   
+  $items['reviews_filter'] = array(
+    'title' => t(''),
+    'page callback' => 'reviews_system_review_filter',
+    'page arguments' => array(),
+    'access arguments' => array('access content')
+  );
+  $items['review_like/%/%'] = array(
+    'title' => t(''),
+    'page callback' => 'reviews_system_review_like',
+    'page arguments' => array('reviews_system_review_like'),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['review_dislike/%/%'] = array(
+    'title' => t(''),
+    'page callback' => 'reviews_system_review_dislike',
+    'page arguments' => array('reviews_system_review_dislike'),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+/*
+ * Testing reviews_system page
+ */
+function reviews_system_settings() {
+    //print reviews_system_send_review_email();
+    
+    //print reviews_system_delete_reviews();
+    
+    $query = db_query("SELECT * FROM {reviews} WHERE uid=0");
+    echo "<pre>";
+    while($res = db_fetch_object($query)) {
+        print_r($res);    
+    }
+    
+    
+    echo "----------- <br /><br /><br /><br />";
+    
+    $query = db_query("SELECT * FROM {reviews_images} WHERE uid=0");
+    while($res = db_fetch_object($query)) {
+       print_r($res); 
+    }
+    echo "</pre>";
+    
+    
+}
+/*
+ * Testing reviews_system page
+ */
+function reviews_system_confirm_review() {
+    $ctext = '<div class="rconfirm"><p>Thanks for your review. Our editorial team will review and publish your review within the next few days.</p></div>'; 
+    return $ctext;
+}
+/*
+ * function for reviews listing for product nodes
+ * render a template file
+ */
+function reviews_system_product_reviews() {
+    $nid = arg(1);
+    $reviews = reviews_system_get_product_reviews($nid);
+    return theme_render_template(drupal_get_path('module', 'reviews_system') .'/templates/reviews.tpl.php',array('reviews' => $reviews));
+}
+/*
+ * hook_nodeapi implementation
+ */
+function reviews_system_nodeapi(&$node, $op, $teaser, $page) {
+  switch ($op) {
+    case 'load':
+        if($node->type == 'product') {
+            return array('reviews' => reviews_system_product_reviews(), 'teaser_reviews' => $teaser_reviews);
+        }
+    break;    
+    case 'view':
+        if($node->type == 'product') { 
+            drupal_add_js(drupal_get_path('module','reviews_system').'/raty/demo/js/jquery.min.js');
+            drupal_add_js(drupal_get_path('module','reviews_system').'/raty/lib/jquery.raty.min.js');
+            drupal_add_js(drupal_get_path('module','reviews_system').'/scripts/script.js');
+        }    
+    break;
+  }
+}
+
+/*
+ * hook_theme implementation
+ */
+function reviews_system_theme($existing, $type, $theme, $path)
+{
+  return array(
+            'reviews_system_review_form'  => array(
+            'arguments' => array('form' => NULL),
+            'template' => '/templates/reviews_system_form',
+        ),
+            'reviews_system_review_edit_form'  => array(
+            'arguments' => array('form' => NULL),
+            'template' => '/templates/review_edit_form',
+        ),
+            'user_login'  => array(
+            'arguments' => array('form' => NULL),
+            'template' => '/templates/user_login',
+        ),
+    );
+}
+/**
+*   hook_preprocess_page implementation
+*/
+//function reviews_system_preprocess_page(&$variables, $hook) {
+//    
+    //print_r($variables);
+
+//  if ( arg(0) == 'add' && arg(1) == 'review' ) {
+//    $variables['theme_hook_suggestions'][] = 'page_add_review';
+//  }
+//}
+
+//function reviews_system_theme_registry_alter(&$theme_registry) {
+//      $theme_hook = 'page'; 
+//      $modulepath = drupal_get_path('module', 'reviews_system');
+
+//       foreach ($hooks as $h) {
+//            array_unshift($theme_registry[$h]['theme paths'], $modulepath);
+//       } 
+//}
+
+/*
+ *  Get product reviews by product ID
+ */
+function reviews_system_get_product_reviews($nid) {
+    $main_sql = "SELECT * FROM {reviews} WHERE status = %d AND nid= %d ORDER BY id DESC";
+    $count_sql = "SELECT COUNT(*) FROM {reviews}";
+    $sql_args = array(
+        1,$nid
+    );
+    $limit = 10;
+    $res = pager_query($main_sql, $limit, 0, $count_sql, $sql_args);
+    $data = array();
+    while($row = db_fetch_array($res)){
+        $rows[] = $row;
+    }
+    $pager = theme('pager',$limit);
+    $data['data'] = $rows;
+    $data['pager'] = $pager;
+    return $data;
+}
+/*
+ *  Get product reviews by product ID
+ */
+function reviews_system_get_reviews_count($nid) {
+    $sql = "SELECT count(*) FROM {reviews} WHERE status = %d AND nid= %d ORDER BY id DESC";
+    $query = db_query($sql,1,$nid);
+    $result = db_result($query);
+    return $result;
+}
+/*
+ * calculate product overall rating
+ */
+function reviews_system_calculate_product_rating($nid) {
+    if($nid) {
+        $query = db_query("SELECT SUM(overall_rating) AS overall_total, SUM(quality) AS quality_total, SUM(services_crew) AS service_total, SUM(value_for_money) AS value_total, SUM(star_experiences) AS star_total FROM {reviews} WHERE nid=%d AND status=%d", $nid,1);
+        $count_query = db_query("SELECT count(*) FROM {reviews} WHERE nid=%d AND status=%d", $nid,1);
+        $total_reviews = db_result($count_query);
+        $res = db_fetch_object($query);
+        if($total_reviews > 0) {
+            $res->overall_total = round(($res->overall_total/$total_reviews),1);
+            $res->quality_total = round(($res->quality_total/$total_reviews),1);
+            $res->service_total = round(($res->service_total/$total_reviews),1);
+            $res->value_total = round(($res->value_total/$total_reviews),1);
+            $res->star_total = round(($res->star_total/$total_reviews),1);
+        }
+        return $res;
+    }
+}
+/*
+ * Review's Detail Page
+ */
+function reviews_system_review_detail($id) {
+    $query = db_query("SELECT * FROM {reviews} WHERE id=%d",$id);
+    $review = db_fetch_array($query);
+    return theme_render_template(drupal_get_path('module', 'reviews_system') .'/templates/review.tpl.php',array('review' => $review));
+}
+/*
+ * get a review by review id
+ */
+function reviews_sysytem_get_review($rid) {
+    $query = db_query("SELECT * FROM {reviews} WHERE id=%d",$rid);
+    $review = db_fetch_array($query);
+    return $review;
+}
+/*
+ * Review's Detail Page
+ */
+function reviews_system_get_image($fid) {
+    $query = db_query("SELECT filename FROM {files} WHERE fid=%d",$fid);
+    $file = db_fetch_object($query);
+    return $file;
+}
+/*
+ * Reviews data on filters
+ */
+function reviews_system_review_data() {
+    $reviews = reviews_system_reviews_data_by_filter();
+    if($reviews) {
+        echo theme_render_template(drupal_get_path('module', 'reviews_system') .'/templates/filters_data.tpl.php',array('reviews' => $reviews));
+    }
+    else {
+        echo "No data found";
+    }
+    exit;
+}
+/*
+ * Advanced filter code
+ */
+function reviews_system_reviews_data_by_filter() {
+    $nid = arg(1);
+    $star = arg(2);
+    $sort = arg(3);
+    if($star && $sort) {
+        $sql = "SELECT * FROM {reviews} WHERE nid = %d AND status = %d AND overall_rating=%d ORDER BY created %s";
+        $query = db_query($sql,$nid,1,$star,$sort);
+    }
+    else if($star) {
+        $sql = "SELECT * FROM {reviews} WHERE nid = %d AND status = %d AND overall_rating=%d";
+        $query = db_query($sql,$nid,1,$star);
+    }
+    else if($sort) {
+        $sql = "SELECT * FROM {reviews} WHERE nid = %d AND status = %d ORDER BY created %s";
+        $query = db_query($sql,$nid,1,$sort);
+    }
+    $data = array();
+    while($row = db_fetch_array($query)){
+        $rows[] = $row;
+    }
+    $data['data'] = $rows;
+    return $data;
+}
+/*
+ * code for order by filter
+ */
+function reviews_system_review_filter() {
+    $nid = $_REQUEST['nid'];
+    $star = $_REQUEST['star'];
+    $method = $_REQUEST['method'];
+    $sort = $_REQUEST['action'];
+
+    if($method == 'created') {
+        $sql = "SELECT * FROM {reviews} WHERE nid = $nid AND status = 1";
+        if($star) {
+            $sql .=  " AND overall_rating=$star";
+        }
+         $sql .= " ORDER BY created $sort";
+    
+        $query = db_query($sql);
+
+        $data = array();
+        while($row = db_fetch_array($query)){
+            $rows[] = $row;
+        }
+        $data['data'] = $rows;
+
+    }
+    else if($method == 'likes') {
+        $sql = "SELECT * FROM {reviews} WHERE nid = $nid AND status = 1";
+        if($star) {
+            $sql .=  " AND overall_rating=$star";
+        }
+        $query = db_query($sql);
+
+        $data = array();
+        while($row = db_fetch_array($query)){
+            $rid = $row['id'];
+            $likessql = "SELECT count(likes) FROM {reviews_likes} WHERE rid = $rid AND likes != 0";
+            $likesQuery = db_query($likessql);
+            $likes_count = db_result($likesQuery);
+            $row['likes_count'] = $likes_count;
+            $rows[] = $row;
+        }
+        $data['data'] = $rows;
+        uasort($data['data'],'sortleadsarr');
+    }
+    else if($method == 'images') {
+        $sql = "SELECT * FROM {reviews} WHERE nid = $nid AND status = 1";
+        if($star) {
+            $sql .=  " AND overall_rating=$star";
+        }
+         $sql .= " ORDER BY images DESC";
+
+        $query = db_query($sql);
+
+        $data = array();
+        while($row = db_fetch_array($query)){
+            $rows[] = $row;
+        }
+        $data['data'] = $rows;
+
+    }
+
+    if($data) {
+        echo theme_render_template(drupal_get_path('module', 'reviews_system') .'/templates/filters_data.tpl.php',array('reviews' => $data));
+    }
+    else {
+        echo "No data found";
+    }
+    exit;
+
+}
+function sortleadsarr($a,$b){
+    return $a['likes_count'] < $b['likes_count']?1:-1;
+}
+/*
+ *  Get Node info by nid
+ */
+function reviews_system_get_node_info($nid) {
+    $query = db_query("SELECT n.*,nr.body,nr.teaser FROM node_revisions nr LEFT JOIN {node} n ON n.nid=nr.nid WHERE n.nid=%d",$nid);
+    $node = db_fetch_object($query);  
+    return $node;
+}
+/*
+ * function callback for like
+ */
+function reviews_system_review_like() {
+    global $user;
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $nid = arg(1);
+    $rid = arg(2);
+    $uid = $user->uid;
+    $timestamp = time();
+
+    $query = db_query("SELECT likes,dislikes FROM {reviews_likes} WHERE rid=%d AND ip='%s'", $rid, $ip);
+    $object = db_fetch_object($query);
+    if($object->likes == 1) {
+        $likes = 0;
+        db_query("UPDATE {reviews_likes} SET likes=%d WHERE rid=%d AND ip='%s'", $likes, $rid, $ip);
+    }
+    else if($object->likes == 0 && $object->likes != '') {
+        $likes = 1;
+        $dislikes = 0;
+        db_query("UPDATE {reviews_likes} SET likes=%d, dislikes=%d WHERE rid=%d AND ip='%s'", $likes, $dislikes, $rid, $ip);
+    }
+    else {
+        $likes = 1;
+        $dislikes = 0;
+        db_query("INSERT INTO {reviews_likes}(rid ,nid, likes, dislikes, ip, timestamp) values(%d, %d, '%s', '%s', '%s', '%s')", $rid, $nid, $likes, $dislikes, $ip, $timestamp);
+    }
+
+    /* return Html Part */
+    $like_dislike_count = reviews_system_likes_dislikes_count($rid);
+
+    $limg = reviews_system_like_image($rid);
+    $dimg = reviews_system_dislike_image($rid);
+    $likeUrl = 'review_like/'.$nid.'/'.$rid;
+    $dislikeUrl = 'review_dislike/'.$nid.'/'.$rid;
+    
+    $li  = '<li>'.l($limg, $likeUrl , array('html' => true, 'attributes' => array('class' => 'like', 'id' => 'like', 'onclick' => 'return click_like('.$rid.');'))).'<span id="likes_count">'.$like_dislike_count['likes'].'</span></li>';
+    $li .= '<li>'.l($dimg, $dislikeUrl, array('html' => true, 'attributes' => array('class' => 'dislike', 'id' => 'dislike', 'onclick' => 'return click_dislike('.$rid.');'))).'<span id="dislikes_count">'.$like_dislike_count['dislikes'].'</span></li>';
+
+    echo $li;
+    exit;
+}
+/*
+ * function callback for dislike
+ */
+function reviews_system_review_dislike() {
+    global $user;
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $nid = arg(1);
+    $rid = arg(2);
+    $uid = $user->uid;
+    $timestamp = time();
+
+    $query = db_query("SELECT likes, dislikes FROM {reviews_likes} WHERE rid=%d AND ip='%s'", $rid, $ip);
+    $object = db_fetch_object($query);
+   
+    if($object->dislikes == 1) {
+        $dislikes = 0;
+        db_query("UPDATE {reviews_likes} SET dislikes=%d WHERE rid=%d AND ip='%s'", $dislikes, $rid, $ip);
+    }
+    else  {
+        if($object->dislikes == 0 && $object->dislikes != '') {
+            $likes = 0;
+            $dislikes = 1;
+            db_query("UPDATE {reviews_likes} SET likes=%d,dislikes=%d WHERE rid=%d AND ip='%s'", $likes, $dislikes, $rid, $ip);
+        }
+        else {
+            $likes = 0;
+            $dislikes = 1;
+            db_query("INSERT INTO {reviews_likes}(rid ,nid, likes, dislikes, ip, timestamp) values(%d, %d, '%s', '%s', '%s', '%s')", $rid, $nid, $likes, $dislikes, $ip, $timestamp);
+        }
+    }
+
+    /* return Html Part */
+    $like_dislike_count = reviews_system_likes_dislikes_count($rid);
+
+    $limg = reviews_system_like_image($rid);
+    $dimg = reviews_system_dislike_image($rid);
+    $likeUrl = 'review_like/'.$nid.'/'.$rid;
+    $dislikeUrl = 'review_dislike/'.$nid.'/'.$rid;
+
+    $li  = '<li>'.l($limg, $likeUrl , array('html' => true, 'attributes' => array('class' => 'like', 'id' => 'like', 'onclick' => 'return click_like('.$rid.');'))).'<span id="likes_count">'.$like_dislike_count['likes'].'</span></li>';
+    $li .= '<li>'.l($dimg, $dislikeUrl, array('html' => true, 'attributes' => array('class' => 'dislike', 'id' => 'dislike', 'onclick' => 'return click_dislike('.$rid.');'))).'<span id="dislikes_count">'.$like_dislike_count['dislikes'].'</span></li>';
+
+    echo $li;
+    exit;
+}
+/*
+ * get like dislike count
+ */
+function reviews_system_likes_dislikes_count($rid) {
+    $lkquery = db_query("SELECT count(likes) AS likecount FROM {reviews_likes} WHERE rid=%d AND likes='%s'", $rid, 1);
+    $likes_count = db_result($lkquery);
+
+    $dkquery = db_query("SELECT count(dislikes) AS dislikecount FROM {reviews_likes} WHERE rid=%d AND dislikes='%s'", $rid, 1);
+    $dislikes_count = db_result($dkquery);
+
+    $array['likes'] = $likes_count;
+    $array['dislikes'] = $dislikes_count;
+
+    return $array;
+}
+/*
+ * get like image according to user state
+ */
+function reviews_system_like_image($rid) {
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $query = db_query("SELECT count(likes) AS likecount FROM {reviews_likes} WHERE rid=%d AND ip='%s' AND likes='%s'", $rid, $ip, 1);
+    $count = db_result($query);
+
+    $mdtemppath = drupal_get_path('module','reviews_system').'/templates/';
+    
+    if($count == 1) {
+        $limgUrl = $mdtemppath.'images/thumb_up.png';
+    }
+    else {
+        $limgUrl = $mdtemppath.'images/thumb_up_hover.png';
+    }
+    $limg = theme_image($limgUrl, $alt, $title, $attributes, $getsize);
+    return $limg;
+}
+/*
+ * get dislike image according to user state
+ */
+function reviews_system_dislike_image($rid) {
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $query = db_query("SELECT count(dislikes) AS dislikecount FROM {reviews_likes} WHERE rid=%d AND ip='%s' AND dislikes='%s'", $rid, $ip, 1);
+    $count = db_result($query);
+
+    $mdtemppath = drupal_get_path('module','reviews_system').'/templates/';
+    if($count) {
+        $dimgUrl = $mdtemppath.'images/thumb_down.png';
+    }
+    else {
+        $dimgUrl = $mdtemppath.'images/thumb_down_hover.png';
+    }
+    $dimg = theme_image($dimgUrl, $alt, $title, $attributes, $getsize);
+    return $dimg;
+}
+/*
+ * get images by review id
+ */
+function reviews_system_get_images($rid) {
+    $query = db_query("SELECT * FROM {reviews_images} WHERE rid = %d",$rid);
+    while($row = db_fetch_array($query)) {
+        $rows[] = $row;
+    }
+    return $rows;
+}
+/*
+ * get verified user
+ */
+function reviews_system_get_verified_user($uid) {
+    $query = db_query('SELECT count(*) FROM {uc_orders} WHERE uid=%d',$uid);
+    $verified_user = db_result($query);
+    if($verified_user > 0) {
+      $verified = 'VERIFIED';
+    }
+    else {
+      $verified = 'NOT VERIFIED';
+    }
+    return $verified;
+}
+/*
+ * Get image title
+ */
+function reviews_system_get_image_title($fid) {
+    $query = db_query("SELECT title FROM {reviews_images} WHERE fid=%d",$fid);
+    $title = db_fetch_object($query);
+    return $title;
+}
+/*
+ * hook_uc_checkout_complete implmentation
+ */
+function reviews_system_uc_checkout_complete($order, $account) {
+    $order_id = $order->order_id;
+    $uid = $account->uid;
+    $email = $account->mail;
+    
+    //echo "<pre>";
+    //print_r($order);
+    //print_r($account);
+    //echo "</pre>";
+    
+    
+    foreach($order->products AS $key => $product) {
+        
+        $node = node_load($product->nid);
+        
+        if(array_key_exists('Booking dates', $product->data['attributes'])) {
+            $date = $product->data['attributes']['Booking dates'];
+            $date = date('Y-m-d h:i:s', strtotime($date));
+        }
+        elseif(array_key_exists('Requested booking date', $product->data['attributes'])) {
+            $date = $product->data['attributes']['Requested booking date'];
+            $date = date('Y-m-d h:i:s', strtotime($date));
+        }
+        else {
+            $date = $order->created;
+            $date = date('Y-m-d h:i:s', $date);
+        }
+        
+        //$datestr = explode('T',$node->field_travel_date[0]['value']);
+        //$date = $datestr[0];
+        
+        $query = db_query("SELECT count(*) FROM {reviews_users_email} WHERE order_id=%d AND nid=%d AND email='%s'", $order_id, $product->nid, $email);
+        $count = db_result($query);
+        
+        if($count == 0) {
+            db_query("INSERT INTO {reviews_users_email}(order_id ,uid, nid, product_title, travel_date, email, status) values(%d, %d, %d, '%s', '%s', '%s', %d)", $order_id, $uid, $product->nid, $product->title, $date, $email, 0);    
+        }
+    }
+    
+}   
+/*
+ * hook_cron implementation
+ */
+function reviews_system_cron() {    
+   $cron = reviews_system_send_review_email();
+   reviews_system_delete_reviews();
+}
+/*
+ * function callback for sending email to user
+ */
+function reviews_system_send_review_email() {
+    
+    $site_name = variable_get('site_name', '');
+    $site_mail = variable_get('site_mail', '');
+    
+    $sql = "SELECT * FROM reviews_users_email WHERE DATE_FORMAT(travel_date, '%Y-%m-%d') = DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL -2 DAY), '%Y-%m-%d') AND status = 0";
+    
+    //SELECT * FROM reviews_users_email WHERE DATE_FORMAT(travel_date, '%Y-%m-%d') = DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL -2 DAY), '%Y-%m-%d') AND status = 0
+    //$sql = "SELECT * FROM {reviews_users_email}";
+    
+    $query = db_query($sql);
+    $records = array();
+    
+    print "<pre>";
+    while($res = db_fetch_array($query)) {
+        print_r($res);
+        $nid = $res['nid'];
+        $order_id = $res['order_id'];
+        $records[$order_id]['order_id'] = $order_id;
+        $records[$order_id]['email'] = $res['email'];
+        $records[$order_id]['uid'] = $res['uid'];
+        $records[$order_id]['products'][$nid]['id'] = $res['id'];
+        $records[$order_id]['products'][$nid]['product_title'] = $res['product_title']; 
+    }
+    
+    
+    print_r($records);
+    print "</pre>";
+    //exit;
+
+    if(isset($records)) {
+        foreach($records AS $order_id => $order) {
+
+            $to = $order['email'];
+            $uid = $order['uid'];
+            
+            $customer = user_load($uid); 
+            
+            
+            
+            foreach($order['products'] AS $nid => $product) {
+                $url = url('add/review/'.$nid, array('absolute' => TRUE));
+                $link .= l($url, $url, array('html' => true))."<br />";
+                $tours[] = $product['product_title'];
+            }
+            
+            $tours_title = implode(' & ', $tours);
+                      
+            $subject = "Please review our tour.";
+            $body  ="Hi ".$customer->name.",";
+            $body .= "<br />";
+            $body .= "<br />";
+            $body .= 'We hope you enjoyed '.$tours_title.' that you booked on '.$site_name.'. <br /><br />';
+            $body .= 'We\'d love if you could take a minute to review your tour on the link below. <br /><br />';
+            $body .=  $link.'<br /><br />';
+            //$body .=  'Your login credentials <br />';
+            //$body .= 'Username: '.$customer->name.'<br />';
+            //$body .= 'Password: '.$customer->pass.'<br /><br />';
+            $body .= "Thanks in advance! <br /><br />";
+            $body .= "Enjoy the rest of your trip. <br /><br />";
+            $body .= "Kind Regards <br />";
+            $body .= "The Mad Travel Online team <br />";
+            
+            //echo $body;
+            //exit;
+            
+            $message = array(
+                'headers' => array('From' => $site_mail,'BCC' => '','Content-type'=> 'text/html','From-name'),
+                    'to' => $to,
+                    'subject' => $subject,
+                    'body' => $body,
+            );
+            drupal_mail_send($message);
+        }
+        db_query("UPDATE {reviews_users_email} SET status = %d WHERE order_id = %d", 1, $order_id);
+        drupal_set_message("Mail has been sent successfully");
+    }
+}
+/**
+*  hook_form_alter inplementation
+*/
+function reviews_system_form_alter($form, $form_state, $form_id) {
+    /*if($form_id == "user_login") {
+        $link = fboauth_action_link_properties('connect');
+        print l(t('Connect'), $link['href'], array('query' => $link['query']));
+        $form['fbconnect'] = array(
+            '#type' => 'markup',
+            '#value' => l(t('Connect'), $link['href'], array('query' => $link['query'])),
+        );
+    }*/
+}
+
+/**
+* To show the rating and reviews on node 
+*/
+function reviews_system_showReviewsTeaser($nid) {
+    
+    $product_rating = reviews_system_calculate_product_rating($nid);
+    $rcount = reviews_system_get_reviews_count($nid);
+    $teaser = '<div class="teaser-reviews"><div class="product-rating">
+                            <div id="overall-rating-'.$nid.'" class="star"></div>
+                            <span style="">'.$product_rating->overall_total.'</span>
+                        </div>
+                        <p class="rcount">
+                            '.$rcount.' reviews
+                        </p>
+              </div>';
+    return $teaser;           
+}
+/**
+* hook_user implementation
+*/
+function reviews_system_user($op, &$edit, &$account, $category = NULL) {
+    if($op == 'login') {
+        
+        //echo "<pre>";print_r($account);echo "</pre>";exit;
+        
+        if(arg(2) != '') {
+            $rid = arg(2);
+            
+            $verified = reviews_system_get_verified_user($account->uid);
+            if($verified == 'VERIFIED') {
+                $verified = 1;
+            }
+            else {
+                $verified = 0;
+            }
+            
+            $user_name = $account->name ;
+            $email = $account->mail;
+            
+            $query = db_query("UPDATE {reviews} SET uid=%d, verified=%d, user_name='%s', email='%s'  WHERE id=%d", $account->uid,$verified,$user_name,$email,$rid);
+            if($query) {
+                drupal_goto('confirm_review');
+            }
+        }
+    }
+}
+/**
+* Implements hook_fboauth_actions_alter(): Customise redirect path
+*
+* @see hook_fboauth_actions_alter();
+*/
+function reviews_system_fboauth_actions_alter(&$actions) {
+  $actions['connect']['callback'] = 'reviews_system_fboauth_action_connect';
+}
+/**
+* Callback for CUSTOM_MODULE_fboauth_actions_alter(): Customise redirect path
+*
+* @see hook_fboauth_actions_alter();
+*/
+function reviews_system_fboauth_action_connect($app_id, $access_token) {
+  // Call the default action first
+  fboauth_action_connect($app_id, $access_token);
+  global $user; //dpm($user);
+  
+  //echo "<pre>";
+//  print_r($_REQUEST);
+//  print_r($user);
+//  echo "</pre>";
+//  exit;
+  
+  if($_REQUEST['state'] != '') {
+      
+        $rid = $_REQUEST['state'];
+        $verified = reviews_system_get_verified_user($user->uid);
+        if($verified == 'VERIFIED') {
+            $verified = 1;
+        }
+        else {
+            $verified = 0;
+        }
+        
+        $user_name = $user->name ;
+        $email = $user->mail;
+        
+        $query = db_query("UPDATE {reviews} SET uid=%d, verified=%d, user_name='%s', email='%s'  WHERE id=%d", $user->uid,$verified,$user_name,$email,$rid);
+        if($query) {
+            drupal_goto('confirm_review');
+        }
+  }
+  
+  
+  //if($user->uid && $user->created == $user->login){
+    //drupal_goto("user/$user->uid/edit");
+  //}
+  //drupal_goto('<front>');
+}
+/**
+* delete reviews with 0 uid
+*/
+function reviews_system_delete_reviews() {
+    
+    $query = db_query("DELETE FROM {reviews} WHERE uid=0");
+    
+    $query = db_query("DELETE FROM {reviews_images} WHERE uid=0");
+}

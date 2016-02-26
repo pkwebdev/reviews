@@ -1,0 +1,116 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ *  Install file for Detube
+ */
+ /**
+  * Implementation of hook_uninstall().
+  */
+function reviews_system_uninstall() {
+    drupal_uninstall_schema('reviews_system');
+    drupal_set_message(t('Reviews system module is Uninstalled successfully.'));
+}
+/**
+* Implementation of hook_install().
+*/
+function reviews_system_install() {
+  drupal_install_schema('reviews_system');
+  drupal_set_message(t('Reviews system module is Installed successfully.'));
+}
+/*
+ * implementation of hook_schema()
+ */
+function reviews_system_schema() {
+
+  /*
+   * main reviews schema
+   */
+  $schema['reviews'] = array(
+    'fields' => array(
+      'id'      => array('type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE),
+      'nid'      => array('type' => 'int', 'unsigned' => TRUE, 'not null' => FALSE, 'default' => 0),
+      'status'      => array('type' => 'int', 'unsigned' => TRUE, 'not null' => FALSE, 'default' => 0),
+      'title'   => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => ''),
+      'body'   => array('type' => 'text', 'not null' => FALSE, 'default' => ''),
+      'images'   => array('type' => 'text', 'not null' => FALSE, 'default' => ''),
+      'created'    => array('type' => 'datetime', 'size' => 'normal'),
+      'overall_rating'    => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => ''),
+      'quality'    => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => ''),
+      'services_crew'    => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => ''),
+      'value_for_money'    => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => ''),
+      'star_experiences'    => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => ''),
+      'uid'    => array('type' => 'int','unsigned' => TRUE, 'not null' => FALSE, 'default' => 0),
+      'verified'      => array('type' => 'int', 'unsigned' => TRUE, 'not null' => FALSE, 'default' => 0),
+      'user_name'    => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => ''),
+      'age'    => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => ''),
+      'gender'    => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => ''),
+      'location'    => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => ''),
+      'email'    => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => ''),
+      'booked_on_site' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => FALSE, 'default' => 0),
+    ),
+    'primary key' => array('id'),
+  );
+
+  /*
+   * reviews_likes schema
+   */
+  $schema['reviews_likes'] = array(
+    'fields' => array(
+      'id'      => array('type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE),
+      'rid'      => array('type' => 'int', 'unsigned' => TRUE, 'not null' => FALSE, 'default' => 0),
+      'nid'      => array('type' => 'int', 'unsigned' => TRUE, 'not null' => FALSE, 'default' => 0),
+      'uid'      => array('type' => 'int', 'unsigned' => TRUE, 'not null' => FALSE, 'default' => 0),
+      'likes'   => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => ''),
+      'dislikes'   => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => ''),
+      'ip'   => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => ''),
+      'timestamp'   => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => ''),
+    ),
+    'primary key' => array('id'),
+  );
+
+  /*
+   * reviews_images schema
+   */
+  $schema['reviews_images'] = array(
+    'fields' => array(
+      'id'      => array('type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE),
+      'rid'      => array('type' => 'int', 'unsigned' => TRUE, 'not null' => FALSE, 'default' => 0),
+      'nid'      => array('type' => 'int', 'unsigned' => TRUE, 'not null' => FALSE, 'default' => 0),
+      'uid'      => array('type' => 'int', 'unsigned' => TRUE, 'not null' => FALSE, 'default' => 0),
+      'fid'      => array('type' => 'int', 'unsigned' => TRUE, 'not null' => FALSE, 'default' => 0),
+      'title'   => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => ''),
+      'alt'   => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => ''),
+      'timestamp'   => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => ''),
+    ),
+    'primary key' => array('id'),
+  );
+
+
+  /*
+   * reviews_likes schema
+   */
+  $schema['reviews_users_email'] = array(
+    'fields' => array(
+      'id'      => array('type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE),
+      'order_id'      => array('type' => 'int', 'unsigned' => TRUE, 'not null' => FALSE, 'default' => 0),
+      'uid'      => array('type' => 'int', 'unsigned' => TRUE, 'not null' => FALSE, 'default' => 0),
+      'nid'      => array('type' => 'int', 'unsigned' => TRUE, 'not null' => FALSE, 'default' => 0),
+      'product_title'   => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => ''),
+      'travel_date'   => array('type' => 'datetime', 'size' => 'normal'),
+      'email'   => array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'default' => ''),
+      'status'      => array('type' => 'int', 'unsigned' => TRUE, 'not null' => FALSE, 'default' => 0),
+    ),
+    'primary key' => array('id'),
+  );
+
+  return $schema;
+}
+/*function reviews_system_update_6100() {
+  $ret = array();
+  $spec = array( 'type' => 'int', 'unsigned' => TRUE, 'not null' => FALSE, 'default' => 0);
+  
+  db_add_field($ret, 'reviews', 'verified', $spec);
+  return $ret;
+}*/
